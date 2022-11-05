@@ -41,9 +41,7 @@ public class UserDaoJDBCImpl implements UserDao {
     public void dropUsersTable() {
         try {
             statement.executeUpdate("drop table users");
-        } catch (SQLException e) {
-            System.out.println("Ошибка удаления таблицы юзеров");
-        }
+        } catch (SQLException e) {}
     }
 
     public void saveUser(String name, String lastName, byte age) {

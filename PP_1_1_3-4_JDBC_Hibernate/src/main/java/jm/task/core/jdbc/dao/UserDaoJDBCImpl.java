@@ -1,6 +1,5 @@
 package jm.task.core.jdbc.dao;
 
-import jm.task.core.jdbc.Main;
 import jm.task.core.jdbc.model.User;
 import jm.task.core.jdbc.util.Util;
 
@@ -13,21 +12,13 @@ import java.util.List;
 
 public class UserDaoJDBCImpl implements UserDao {
     Util util = new Util();
-    Statement statement;
-
-    {
-        try {
-            statement = util.getConnection().createStatement();
-        } catch (SQLException e) {
-            System.out.println("Statement error");
-        }
-    }
 
     public UserDaoJDBCImpl() {
+
     }
 
     public void createUsersTable() {
-        try {
+        try (Statement statement = util.getConnection().createStatement()) {
             statement.executeUpdate("create table users(id int NOT NULL AUTO_INCREMENT," +
                     "name varchar(45) NOT NULL," +
                     "lastname varchar(45) NOT NULL," +
@@ -39,7 +30,7 @@ public class UserDaoJDBCImpl implements UserDao {
     }
 
     public void dropUsersTable() {
-        try {
+        try (Statement statement = util.getConnection().createStatement()) {
             statement.executeUpdate("drop table users");
         } catch (SQLException e) {}
     }
@@ -59,13 +50,15 @@ public class UserDaoJDBCImpl implements UserDao {
         try (PreparedStatement ps = util.getConnection().prepareStatement("delete from users where id = ?;")) {
             ps.setInt(1, (int)id);
             ps.execute();
-        } catch (SQLException e) {}
+        } catch (SQLException e) {
+            System.out.println("Ошибка удаления объекта User");
+        }
 
     }
 
     public List<User> getAllUsers() {
         List<User> listUsers = new ArrayList<>();
-        try {
+        try (Statement statement = util.getConnection().createStatement()) {
             ResultSet resultSet = statement.executeQuery("select * from users;");
             while (resultSet.next()) {
                 User user = new User();
@@ -82,7 +75,7 @@ public class UserDaoJDBCImpl implements UserDao {
     }
 
     public void cleanUsersTable() {
-        try {
+        try (Statement statement = util.getConnection().createStatement()){
             statement.execute("delete from users;");
         } catch (SQLException e) {
             System.out.println("Ошибка очистки таблицы юзеров");
